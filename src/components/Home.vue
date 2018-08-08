@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>{{ msg }}</h1>
-    <button @click="googleLogin">Googleアカウントでログイン</button>
+    <button @click="googleLogin" v-bind:aria-disabled="sentRequest">Googleアカウントでログイン</button>
   </div>
 
 </template>
@@ -11,12 +11,13 @@
         name: "Home",
         data() {
             return {
-                msg: "Welcome to Vue-Firebose Test"
+                msg: "Welcome to Vue-Firebose Test",
+                sentRequest: false,
             }
         },
         methods: {
             googleLogin: function () {
-                firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+               this.$store.dispatch("login")
             }
         }
     }

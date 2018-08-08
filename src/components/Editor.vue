@@ -11,16 +11,23 @@
     export default {
         name: "Editor",
         props:{
-            "user":{
-                type:Object,
-            },
+            // "user":{
+            //     type:Object,
+            // },
+        },
+        computed: {
+            user: function () {
+                return this.$store.getters.user;
+
+            }
         },
         data() {
             return {}
         },
         methods: {
             logout: function(){
-                firebase.auth().signOut();
+                // firebase.auth().signOut();
+                this.$store.dispatch("logout");
             }
         }
     }
