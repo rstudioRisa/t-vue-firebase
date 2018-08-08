@@ -1,7 +1,10 @@
 <template>
   <div id="app" class="app">
-    <Home v-if="!isLogin"></Home>
-    <Editor :user="userData" v-if="isLogin"></Editor>
+    <p v-if="!checkedUserStatus">check status</p>
+    <div v-if="checkedUserStatus">
+      <Home v-if="!isLogin"></Home>
+      <Editor v-if="isLogin"></Editor>
+    </div>
   </div>
 </template>
 
@@ -14,25 +17,34 @@
         name: 'app',
         data() {
             return {
-                isLogin: false,
-                userData: null,
+                // isLogin: false,
+                // userData: null,
+                checkedUserStatus: false,
             }
 
+        },
+        computed: {
+            isLogin: function () {
+                return this.$store.getters.isLogin;
+            }
         },
         components: {
             Home,
             Editor,
         },
         created: function () {
-            firebase.auth().onAuthStateChanged(user=>{
-                console.log(user);
-                if(user){
-                    this.isLogin = true;
-                    this.userData = user;
-                } else {
-                    this.isLogin = false;
-                    this.userData = null;
+            firebase.auth().onAuthStateChanged(user => {
+                console.log(user, this.$store.getters.user);
+                if (user) {
+                    this.$store.commit("setUserData", {user: user});
+                    // console.log("state", this.$store.getters.user)
+                    // this.isLogin = true;
+                    // this.userData = user;
+                    // } else {
+                    // this.isLogin = false;
+                    // this.userData = null;
                 }
+                this.checkedUserStatus = true;
             })
 
         },
