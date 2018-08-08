@@ -4,10 +4,15 @@
     <span>{{ user.displayName }}</span>
 
     <button @click="logout">ログアウト</button>
+    <div class="editorWrapper">
+      <textarea class="markdown" v-model="markdown"></textarea>
+      <div class="preview" v-html="preview()"></div>
+    </div>
   </div>
 </template>
 
 <script>
+    import marked from "marked";
     export default {
         name: "Editor",
         props:{
@@ -22,14 +27,30 @@
             }
         },
         data() {
-            return {}
+            return {
+                markdown: "",
+            }
         },
         methods: {
-            logout: function(){
+            logout: function () {
                 // firebase.auth().signOut();
                 this.$store.dispatch("logout");
+            },
+            preview: function(){
+                return marked(this.markdown);
             }
+
+
         }
     }
 </script>
-
+<style lang="sass" scoped>
+  .editorWrapper
+    display: flex
+  .markdown
+    width: 50%
+    height: 500px
+  .preview
+    width: 50%
+    text-align: left
+</style>
