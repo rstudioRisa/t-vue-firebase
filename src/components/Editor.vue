@@ -5,13 +5,13 @@
 
     <button @click="logout">ログアウト</button>
     <div class="memoList">
-      <button class="addMemoButton" @click="addMemo">メモ追加</button>
+      <button class="addMemoButton" @click="addMemo" :aria-disabled="sending">メモ追加</button>
       <ul>
         <li v-for="(memo,index) in memos" @click="selectMemo(index)" :data-selected="selectedIndex==index">{{ displayTitle(memo.markdown) }}</li>
       </ul>
       <div class="memoController">
-        <button class="removeMemoButton" v-if="memos.length>0" @click="removeCurrentMemo">表示中のメモを削除</button>
-        <button class="saveMemoButton" v-if="memos.length>0" @click="saveRemoteMemos">メモを保存する</button>
+        <button class="removeMemoButton" v-if="memos.length>0" @click="removeCurrentMemo" :aria-disabled="sending">表示中のメモを削除</button>
+        <button class="saveMemoButton" v-if="memos.length>0" @click="saveRemoteMemos" :aria-disabled="sending">メモを保存する</button>
       </div>
     </div>
     <div class="editorWrapper" v-if="memos.length>0">
@@ -42,6 +42,8 @@
                 markdown: "",
                 selectedIndex: 0,
                 trash: null,
+                sending: false,
+
             }
         },
         created: function(){
@@ -72,6 +74,7 @@
             },
             addMemo: function () {
                 this.memos.push({markdown: "無題のメモ"});
+                this.selectedIndex = this.memos.length -1;
             },
             selectMemo: function(index) {
                 this.selectedIndex = index;
@@ -79,11 +82,17 @@
             },
             displayTitle: text => text.split(/\n/)[0],
             removeCurrentMemo: function () {
-                this.trash = this.memos.splice(this.selectedIndex,1);
+                if(confirm("現在のメモを保存していいですか？")) {
+                    this.trash = this.memos.splice(this.selectedIndex,1);
+                    this.selectedIndex = 0;
+
+                }
             },
             saveRemoteMemos: function () {
+                this.sending = true;
                 firebase.database().ref("memos/" + this.user.uid).set(this.memos).then(result=> {
-                    console.log("保存しました！")
+                    console.log("保存しました！");
+                    this.sending = false;
                 });
 
             },

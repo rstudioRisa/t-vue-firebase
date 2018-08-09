@@ -17,6 +17,7 @@
         },
         methods: {
             googleLogin: function () {
+                this.sentRequest = true;
                this.$store.dispatch("login")
             }
         }
